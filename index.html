@@ -1,0 +1,652 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercícios de PHP - Simulado para Prova</title>
+    <!-- Fonts Google: Orbitron & Rajdhani -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050b14;
+            --bg-card: #0a1424;
+            --primary-neon: #00f0ff;
+            --secondary-neon: #0066ff;
+            --accent-glow: rgba(0, 240, 255, 0.4);
+            --correct-green: #00ff88;
+            --wrong-red: #ff2a6d;
+            --text-main: #e0f2fe;
+            --text-dim: #7dd3fc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(0, 102, 255, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 50%);
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--bg-card);
+            border: 1px solid var(--secondary-neon);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 0 25px rgba(0, 102, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
+        }
+
+        /* TELA INICIAL */
+        #home-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 350px;
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary-neon), 0 0 20px var(--secondary-neon);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .btn-start {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            background: var(--primary-neon);
+            border: none;
+            padding: 16px 50px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px var(--primary-neon);
+            transition: all 0.3s ease;
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+            background: #fff;
+            box-shadow: 0 0 30px var(--primary-neon), 0 0 50px var(--secondary-neon);
+        }
+
+        /* TELA DE QUESTÕES */
+        #quiz-screen {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .question-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary-neon);
+        }
+
+        .progress-bar-bg {
+            width: 60%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--secondary-neon), var(--primary-neon));
+            box-shadow: 0 0 8px var(--primary-neon);
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #020610;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(10, 20, 36, 0.8);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-neon);
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        /* TELA DE TRANSIÇÃO / VER RESULTADOS */
+        #finish-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .finish-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-neon);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .btn-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
+            border: none;
+            padding: 18px 45px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: all 0.3s ease;
+        }
+
+        .btn-score:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--primary-neon);
+        }
+
+        /* TELA DE PONTUAÇÃO E FEEDBACK DETALHADO */
+        #result-screen {
+            display: none;
+        }
+
+        .score-summary {
+            text-align: center;
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--primary-neon);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+
+        .score-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary-neon);
+            text-shadow: 0 0 15px var(--primary-neon);
+            margin: 10px 0;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .review-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .review-list::-webkit-scrollbar-thumb {
+            background: var(--secondary-neon);
+            border-radius: 4px;
+        }
+
+        .review-card {
+            background: rgba(2, 6, 16, 0.8);
+            border-radius: 8px;
+            padding: 18px;
+            border-left: 4px solid var(--wrong-red);
+        }
+
+        .review-card.correct {
+            border-left-color: var(--correct-green);
+        }
+
+        .review-card .q-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .review-card .user-ans {
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .review-card .correct-ans {
+            color: var(--correct-green);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .status-badge.correct {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--correct-green);
+            border: 1px solid var(--correct-green);
+        }
+
+        .status-badge.wrong {
+            background: rgba(255, 42, 109, 0.2);
+            color: var(--wrong-red);
+            border: 1px solid var(--wrong-red);
+        }
+
+        .btn-restart {
+            margin-top: 25px;
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--primary-neon);
+            color: var(--primary-neon);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-restart:hover {
+            background: var(--primary-neon);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--primary-neon);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA INICIAL -->
+        <div id="home-screen">
+            <h1 class="main-title">EXERCÍCIOS DE PHP</h1>
+            <p class="subtitle">simulado para prova</p>
+            <button class="btn-start" onclick="startQuiz()">começar</button>
+        </div>
+
+        <!-- TELA DO QUESTIONÁRIO -->
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <span class="question-number" id="q-number">Questão 01/20</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="question-text" id="q-text"></div>
+            <div class="code-block" id="q-code" style="display: none;"></div>
+
+            <div class="options-container" id="options-container"></div>
+        </div>
+
+        <!-- TELA FINALIZADA (BOTÃO VER PONTUAÇÃO) -->
+        <div id="finish-screen">
+            <h2 class="finish-title">Você concluiu as 20 questões!</h2>
+            <p style="margin-bottom: 30px; color: var(--text-dim);">Clique no botão abaixo para analisar seu desempenho.</p>
+            <button class="btn-score" onclick="showResults()">ver pontuação</button>
+        </div>
+
+        <!-- TELA DE RESULTADOS -->
+        <div id="result-screen">
+            <div class="score-summary">
+                <h2>Resultado Final</h2>
+                <div class="score-number" id="score-display">0 / 20</div>
+                <p id="score-percentage" style="color: var(--text-dim); font-size: 1.2rem;"></p>
+            </div>
+
+            <h3 style="margin-bottom: 15px; font-family: 'Orbitron', sans-serif; color: var(--primary-neon);">Detalhamento do Simulado:</h3>
+            
+            <div class="review-list" id="review-list"></div>
+
+            <button class="btn-restart" onclick="resetQuiz()">Refazer Simulado</button>
+        </div>
+    </div>
+
+    <script>
+        // Questões baseadas estritamente nos códigos PHP fornecidos
+        const questions = [
+            {
+                question: "No Sistema de Notas Escolar, qual a média mínima necessária para o aluno ser considerado APROVADO sem recuperação?",
+                code: "$status = $media >= 7.0 ? 'APROVADO' : ($media >= 5.0 ? 'RECUPERAÇÃO' : 'REPROVADO');",
+                options: ["5.0", "6.0", "7.0", "8.0"],
+                answer: 2
+            },
+            {
+                question: "Qual função do PHP é utilizada no código para substituir vírgula por ponto no valor informado da nota?",
+                code: "$input = str_replace(',', '.', $input);",
+                options: ["substr_replace()", "str_replace()", "preg_replace()", "trim()"],
+                answer: 1
+            },
+            {
+                question: "No algoritmo de cálculo de consumo de combustível, qual valor é retornado pelo método calcularKml(500, 40)?",
+                code: "public function calcularKml($kmRodados, $litros) {\n  $consumo = $kmRodados / $litros;\n  return $consumo;\n}",
+                options: ["10.5 Km/L", "12.5 Km/L", "15.0 Km/L", "20.0 Km/L"],
+                answer: 1
+            },
+            {
+                question: "Na classe Carro (com construtor promovido), qual modifiador de visibilidade foi aplicado nas propriedades private?",
+                code: "public function __construct(\n  private string $marca,\n  private string $modelo,\n  private string $cor\n) {}",
+                options: ["public", "protected", "private", "static"],
+                answer: 2
+            },
+            {
+                question: "O método mágico __toString() na classe Carro permite:",
+                code: "public function __toString(): string {\n  return sprintf('Marca: %s...', $this->marca);\n}",
+                options: [
+                    "Converter uma string em um objeto da classe",
+                    "Representar o objeto como uma string ao usar 'echo $uno;'",
+                    "Destruir a instância da classe Carro",
+                    "Comparar dois objetos do tipo Carro"
+                ],
+                answer: 1
+            },
+            {
+                question: "Qual o retorno da chamada estática Carro::calcularDesconto(100000, 15)?",
+                code: "public static function calcularDesconto(float $valorOriginal, float $percentual): float {\n  return $valorOriginal * (1 - ($percentual / 100));\n}",
+                options: ["R$ 15.000,00", "R$ 85.000,00", "R$ 100.000,00", "R$ 115.000,00"],
+                answer: 1
+            },
+            {
+                question: "Como é calculada a autonomia de um veículo no código orientado a objetos?",
+                code: "public static function calcularKm(float $capacidade, float $consumoPorLitro): float {\n  return $capacidade * $consumoPorLitro;\n}",
+                options: [
+                    "Multiplicando a capacidade do tanque pelo consumo por litro",
+                    "Dividindo a capacidade do tanque pelo consumo por litro",
+                    "Subtraindo o consumo da capacidade do tanque",
+                    "Multiplicando a autonomia pelo preço do combustível"
+                ],
+                answer: 0
+            },
+            {
+                question: "No sistema de e-commerce, qual método da classe Pedido insere um Produto na lista de produtos?",
+                code: "public function addProduto(Produto $produto): void {\n  $this->produtos[] = $produto;\n}",
+                options: ["pushProduto()", "insertProduto()", "addProduto()", "setProduto()"],
+                answer: 2
+            },
+            {
+                question: "Qual a fórmula utilizada pela classe Pedido para calcular o valor total final do pedido?",
+                code: "public function calcularValorTotalPedido(): float {\n  return ($this->calcularSubtotal() + $this->frete) - $this->desconto;\n}",
+                options: [
+                    "Subtotal - Frete + Desconto",
+                    "(Subtotal + Frete) - Desconto",
+                    "Subtotal + Frete + Desconto",
+                    "(Subtotal - Desconto) * Frete"
+                ],
+                answer: 1
+            },
+            {
+                question: "No trecho de código com a estrutura condicional ternária encadeada, qual percentual de desconto recebe um produto com preço de R$ 3.500,00?",
+                code: "$discount = $price > 5000 ? 15.0 : ($price > 4000 ? 13.7 : ($price > 3000 ? 9.5 : ($price >= 1500 ? 8.0 : 0.0)));",
+                options: ["15.0%", "13.7%", "9.5%", "8.0%"],
+                answer: 2
+            },
+            {
+                question: "No arquivo de contagem com laço 'for', quais são os limites inicial e final exibidos?",
+                code: "$limiteInicial = -100;\n$limiteFinal = 100;\n\nfor ($numero = $limiteInicial; $numero <= $limiteFinal; $numero++) {\n    echo \"Contagem: {$numero}\\n\";\n}",
+                options: ["De 0 a 100", "De -100 a 100", "De 1 a 100", "De -100 a 0"],
+                answer: 1
+            },
+            {
+                question: "Qual palavra-chave é utilizada pela classe Vendedor para herdar os métodos e propriedades da classe Funcionario?",
+                code: "class Vendedor extends Funcionario {\n    public function comissao() { ... }\n}",
+                options: ["implements", "inherits", "extends", "instanceof"],
+                answer: 2
+            },
+            {
+                question: "No cálculo do desconto do segundo modelo da classe Carro ($meuCarro2: R$ 50.000 com 15% de desconto), qual é o valor final calculado?",
+                code: "public function calcularDesconto() {\n  return $this->preco - ($this->preco * ($this->desconto / 100));\n}",
+                options: ["R$ 42.500", "R$ 45.000", "R$ 35.000", "R$ 47.500"],
+                answer: 0
+            },
+            {
+                question: "Qual o valor do booleano invertido pela negação (! $resultado) no exercício de operadores lógicos?",
+                code: "$valor1 = 200;\n$valor2 = 200;\n$resultado = ($valor1 <> $valor2) || ($valor2 != 23) || !($valor1 >= 5);\n//$resultado é true, pois (200 != 23) é true.\necho 'resultado;' . !$resultado;",
+                options: ["true (1)", "false (vazio na saída)", "null", "error"],
+                answer: 1
+            },
+            {
+                question: "O operador de comparação '<>' no PHP equivale a qual outro operador?",
+                code: "// operadores de comparação\n// != ou <> (diferente)",
+                options: ["Igual (==)", "Identico (===)", "Diferente (!=)", "Maior ou igual (>=)"],
+                answer: 2
+            },
+            {
+                question: "No script de Pedido/ItemPedido, como é calculado o valor total de um item individual do pedido?",
+                code: "public function getValorTotalItem(): float {\n  return $this->produto->getValorUnitario() * $this->quantidade;\n}",
+                options: [
+                    "Multiplicando o valor unitário do produto pela quantidade",
+                    "Dividindo o valor unitário pela quantidade",
+                    "Somando o valor unitário com a quantidade",
+                    "Aplicando o frete sobre o valor unitário"
+                ],
+                answer: 0
+            },
+            {
+                question: "O operador de comparação '===' no PHP verifica:",
+                code: "// == (igual), === (identico)",
+                options: [
+                    "Apenas se os valores são iguais",
+                    "Se os valores e os tipos de dados são idênticos",
+                    "Se o primeiro valor é maior que o segundo",
+                    "Se as variáveis possuem o mesmo nome"
+                ],
+                answer: 1
+            },
+            {
+                question: "Qual das seguintes funções foi utilizada para formatar valores monetários nos scripts PHP estudados?",
+                code: "number_format($this->valor, 2, ',', '.')",
+                options: ["money_format()", "number_format()", "string_format()", "float_format()"],
+                answer: 1
+            },
+            {
+                question: "Qual é a constante nativa do PHP utilizada para quebra de linha em saídas de terminal cross-platform?",
+                code: "echo 'Marca: ' . $meuCarro->marca . PHP_EOL;",
+                options: ["\\n", "PHP_EOL", "BUILD_BREAK", "LINE_END"],
+                answer: 1
+            },
+            {
+                question: "Em PHP, qual operador lógico exige que TODAS as comparações sejam verdadeiras para retornar TRUE?",
+                code: "// E (&&) --> TRUE, todas as comparações forem verdadeiras",
+                options: ["||", "!", "&&", "<>"],
+                answer: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+
+        function startQuiz() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            currentQuestion = 0;
+            userAnswers = [];
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            
+            // Atualizar Progresso
+            document.getElementById('q-number').innerText = `Questão ${String(currentQuestion + 1).padStart(2, '0')}/20`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            // Texto e Código
+            document.getElementById('q-text').innerText = q.question;
+            const codeBox = document.getElementById('q-code');
+            if (q.code) {
+                codeBox.innerText = q.code;
+                codeBox.style.display = 'block';
+            } else {
+                codeBox.style.display = 'none';
+            }
+
+            // Opções
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<strong style="color: var(--primary-neon); margin-right: 12px;">${String.fromCharCode(65 + idx)})</strong> ${escapeHtml(opt)}`;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(index) {
+            userAnswers.push(index);
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showFinishScreen();
+            }
+        }
+
+        function showFinishScreen() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('finish-screen').style.display = 'block';
+        }
+
+        function showResults() {
+            document.getElementById('finish-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            let score = 0;
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.answer;
+                if (isCorrect) score++;
+
+                const card = document.createElement('div');
+                card.className = `review-card ${isCorrect ? 'correct' : ''}`;
+
+                card.innerHTML = `
+                    <span class="status-badge ${isCorrect ? 'correct' : 'wrong'}">
+                        ${isCorrect ? 'ACERTOU' : 'ERROU'}
+                    </span>
+                    <div class="q-title">${idx + 1}. ${escapeHtml(q.question)}</div>
+                    <div class="user-ans">Sua resposta: <strong>${userAns !== undefined ? escapeHtml(q.options[userAns]) : 'Não respondida'}</strong></div>
+                    ${!isCorrect ? `<div class="correct-ans">Resposta correta: <strong>${escapeHtml(q.options[q.answer])}</strong></div>` : ''}
+                `;
+
+                reviewList.appendChild(card);
+            });
+
+            document.getElementById('score-display').innerText = `${score} / 20`;
+            const percent = Math.round((score / 20) * 100);
+            document.getElementById('score-percentage').innerText = `Aproveitamento: ${percent}%`;
+        }
+
+        function resetQuiz() {
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('home-screen').style.display = 'flex';
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
+```
